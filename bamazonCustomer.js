@@ -4,14 +4,8 @@ var inquirer = require("inquirer");
 
 var connection = mysql.createConnection({
   host: "localhost",
-
-  // Your port; if not 3306
   port: 3306,
-
-  // Your username
   user: "root",
-
-  // Your password
   password: process.env.PSWD,
   database: "bamazon"
 });
@@ -22,33 +16,38 @@ connection.connect(function(err) {
   displayAllItems();
 });
 
-var itemList = [];
 var queryResult = null;
+var ItemsInfo = [];
+
+var updateItemsInfo = function (arg) {
+    for (var i = 0; i < arg.length; i++) {
+        var item =             
+            arg[i].id +
+            " || " +
+            arg[i].product_name +
+            " ( " +
+            arg[i].department_name +
+            " ) || Price: $" +
+            arg[i].price;
+            if (arg[i].discount_rate !== 0) {
+                item += (" ( " +arg[i].discount_rate + " % discount )");
+            }
+            item += " || in Stock: " + arg[i].stock_quantity;
+        
+        ItemsInfo.push(item);
+    }
+}
 
 var displayAllItems = function() {
-    
     var query = "SELECT * FROM products";
     connection.query(query, function(err, res) {
         if (err) throw err;
         queryResult = res;
-        console.log(res.length + " matches found!");
-        
-        /** RUN QUERY AND PUSH DATA TO itemList */
-        for (var i = 0; i < res.length; i++) {
-            itemList.push(
-                res[i].id +
-                " || " +
-                res[i].product_name +
-                " || Section: " +
-                res[i].department_name +
-                " || Price: $" +
-                res[i].price
-            );
-        }
-        console.log(itemList);
+        console.log("Welcome to Bamazon! We have", res.length, "items available.\n");
+        updateItemsInfo(res);
+        console.log(ItemsInfo);
         console.log("\n")
         selectItem();
-
     });
 }
 
@@ -68,9 +67,10 @@ var selectItem = function () {
         if (queryResult[response.select - 1].stock_quantity < response.quantity) {
             console.log(`Insufficient quantity!`);
         } else {
-            console.log("before:",queryResult[response.select - 1].stock_quantity);
+
+            // console.log("before:",queryResult[response.select - 1].stock_quantity);
             queryResult[response.select - 1].stock_quantity -= parseInt(response.quantity);
-            console.log("after:",queryResult[response.select - 1].stock_quantity);
+            // console.log("after:",queryResult[response.select - 1].stock_quantity);
 
             /** UPDATE UNITS */
             // updateUnits(); // does not work
@@ -82,9 +82,10 @@ var selectItem = function () {
                 ], 
                 function(err, res) {
                 if (err) throw err;
-                console.log("Successfully purchased", queryResult[response.select - 1].product_name, "( x", response.quantity, ")");
-                console.log("The total cost of your purchase is:", queryResult[response.select - 1].price * response.quantity)
+                console.log("\nSuccessfully purchased", queryResult[response.select - 1].product_name, "( x", response.quantity, ")");
+                console.log("The total cost of your purchase is: $", queryResult[response.select - 1].price * response.quantity,"\n");
             });
+            connection.end();
         }            
     });
 }
