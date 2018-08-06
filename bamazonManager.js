@@ -49,23 +49,21 @@ var menuOptions = function () {
 
 var QUERYRESULT = null;
 var ITEMSINFO = [];
+var ITEMHEADER = ["|ID | " + " ITEM NAME".padEnd(73) + "| " + " DEPARTNEMT".padEnd(22) + "| " + " PRICE " + "| " + "LIST PRICE " + "| " + "DISCOUNT " + "| " + "INVENTORY " + "|"];
+ITEMHEADER.push("-".repeat(149));
 
 var updateItemsInfo = function (arg) {
     for (var i = 0; i < arg.length; i++) {
-        var item =             
-            arg[i].id +
-            " || " +
-            arg[i].product_name +
-            " ( " +
-            arg[i].department_name +
-            " ) || Price: $" +
-            arg[i].price;
-            if (arg[i].discount_rate !== 0) {
-                item += (" ( " +arg[i].discount_rate + " % discount )");
-            }
-            item += " || in Stock: " + arg[i].stock_quantity;
-        
-            ITEMSINFO.push(item);
+        var itemId = arg[i].id;
+        var itemName = arg[i].product_name;
+        var departmentName = arg[i].department_name;
+        var price = arg[i].price;
+        var listPrice = arg[i].list_price;
+        var discount = arg[i].discount_rate;
+        var inventory = arg[i].stock_quantity;
+        var item = "| " + itemId.toString().padEnd(2) + "| " + itemName.padEnd(73) + "| " + departmentName.padEnd(22) + "| $" + price.toString().padEnd(6)
+                 + "| $" + listPrice.toString().padEnd(10) + "| " + discount.toString().padStart(7) + "% | " + inventory.toString().padStart(9) + " |";  
+        ITEMSINFO.push(item);
     }
 }
 
@@ -76,7 +74,9 @@ var listAvailableItems = function () {
         function(err, res) {
             if (err) throw err;
             updateItemsInfo(res);
+            console.log(ITEMHEADER);
             console.log(ITEMSINFO);
+            console.log("\n")
             connection.end();
         }
     );
@@ -89,7 +89,9 @@ var listItemsLowInStock = function () {
         function(err, res) {
             if (err) throw err;
             updateItemsInfo(res);
+            console.log(ITEMHEADER);
             console.log(ITEMSINFO);
+            console.log("\n")
             connection.end();
         }
     );

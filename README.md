@@ -15,3 +15,13 @@ challenge 1:
     * If not:
         * return `Insufficient quantity!`, and then prevent the order from going through. 
 
+
+challenge 2:
+
+* From node, create 4 actions:
+    * Show all products for sale
+    * Show all low inventory
+    * Add to inventory
+    * Add new product
+
+

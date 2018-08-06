@@ -16,25 +16,23 @@ connection.connect(function(err) {
   displayAllItems();
 });
 
-var queryResult = null;
-var ItemsInfo = [];
+var QUERYRESULT = null;
+var ITEMSINFO = [];
+var ITEMHEADER = ["|ID | " + " ITEM NAME".padEnd(73) + "| " + " DEPARTNEMT".padEnd(22) + "| " + " PRICE " + "| " + "LIST PRICE " + "| " + "DISCOUNT " + "| " + "INVENTORY " + "|"];
+ITEMHEADER.push("-".repeat(149));
 
 var updateItemsInfo = function (arg) {
     for (var i = 0; i < arg.length; i++) {
-        var item =             
-            arg[i].id +
-            " || " +
-            arg[i].product_name +
-            " ( " +
-            arg[i].department_name +
-            " ) || Price: $" +
-            arg[i].price;
-            if (arg[i].discount_rate !== 0) {
-                item += (" ( " +arg[i].discount_rate + " % discount )");
-            }
-            item += " || in Stock: " + arg[i].stock_quantity;
-        
-        ItemsInfo.push(item);
+        var itemId = arg[i].id;
+        var itemName = arg[i].product_name;
+        var departmentName = arg[i].department_name;
+        var price = arg[i].price;
+        var listPrice = arg[i].list_price;
+        var discount = arg[i].discount_rate;
+        var inventory = arg[i].stock_quantity;
+        var item = "| " + itemId.toString().padEnd(2) + "| " + itemName.padEnd(73) + "| " + departmentName.padEnd(22) + "| $" + price.toString().padEnd(6)
+                 + "| $" + listPrice.toString().padEnd(10) + "| " + discount.toString().padStart(7) + "% | " + inventory.toString().padStart(9) + " |";  
+        ITEMSINFO.push(item);
     }
 }
 
@@ -42,10 +40,11 @@ var displayAllItems = function() {
     var query = "SELECT * FROM products";
     connection.query(query, function(err, res) {
         if (err) throw err;
-        queryResult = res;
+        QUERYRESULT = res;
         console.log("Welcome to Bamazon! We have", res.length, "items available.\n");
         updateItemsInfo(res);
-        console.log(ItemsInfo);
+        console.log(ITEMHEADER);
+        console.log(ITEMSINFO);
         console.log("\n")
         selectItem();
     });
@@ -64,26 +63,26 @@ var selectItem = function () {
             message: "How many units do you want?"
         }
     ]).then( function(response) {
-        if (queryResult[response.select - 1].stock_quantity < response.quantity) {
+        if (QUERYRESULT[response.select - 1].stock_quantity < response.quantity) {
             console.log(`Insufficient quantity!`);
         } else {
 
-            // console.log("before:",queryResult[response.select - 1].stock_quantity);
-            queryResult[response.select - 1].stock_quantity -= parseInt(response.quantity);
-            // console.log("after:",queryResult[response.select - 1].stock_quantity);
+            // console.log("before:",QUERYRESULT[response.select - 1].stock_quantity);
+            QUERYRESULT[response.select - 1].stock_quantity -= parseInt(response.quantity);
+            // console.log("after:",QUERYRESULT[response.select - 1].stock_quantity);
 
             /** UPDATE UNITS */
             // updateUnits(); // does not work
             connection.query(
                 "UPDATE products SET ? WHERE ?", 
                 [
-                    { stock_quantity: queryResult[response.select - 1].stock_quantity },
+                    { stock_quantity: QUERYRESULT[response.select - 1].stock_quantity },
                     { id: response.select}
                 ], 
                 function(err, res) {
                 if (err) throw err;
-                console.log("\nSuccessfully purchased", queryResult[response.select - 1].product_name, "( x", response.quantity, ")");
-                console.log("The total cost of your purchase is: $", queryResult[response.select - 1].price * response.quantity,"\n");
+                console.log("\nSuccessfully purchased", QUERYRESULT[response.select - 1].product_name, "( x", response.quantity, ")");
+                console.log("The total cost of your purchase is: $", QUERYRESULT[response.select - 1].price * response.quantity,"\n");
             });
             connection.end();
         }            
@@ -93,7 +92,7 @@ var selectItem = function () {
 //     connection.query(
 //         "UPDATE products SET ? WHERE ?", 
 //         [
-//             { stock_quantity: queryResult[response.select - 1].stock_quantity },
+//             { stock_quantity: QUERYRESULT[response.select - 1].stock_quantity },
 //             { id: response.select}
 //         ], 
 //         function(err, res) {

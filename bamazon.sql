@@ -14,12 +14,16 @@ CREATE TABLE products(
   PRIMARY KEY (id)
 );
 
+CREATE TABLE departments(
+  id INT NOT NULL AUTO_INCREMENT,
+  department_name VARCHAR(100) NOT NULL,
+  over_head_costs DECIMAL(9,2),
+  PRIMARY KEY (id)
+);
+
 
 INSERT INTO products (product_name, department_name, price, list_price, discount_rate, stock_quantity)
 VALUES ('Bounty Select-a-Size Paper Towels, White, Huge Roll, 8 Count', 'health & household', 15.89, 23.99, 34, 2948)
-;
-INSERT INTO products (product_name, department_name, price, list_price, discount_rate, stock_quantity)
-VALUES ('Puritan\'s Pride Garlic Oil 5,000mg, 250 Rapid Release Softgels', 'health & household', 14.95, 14.95, 0, 2)
 ;
 INSERT INTO products (product_name, department_name, price, list_price, discount_rate, stock_quantity)
 VALUES ('OFM Essentials Leather Executive Office/Computer Chair with Arms', 'home & kitchen', 55, 64.33, 15, 210)
@@ -34,7 +38,7 @@ INSERT INTO products (product_name, department_name, price, list_price, discount
 VALUES ('FIJI Natural Artesian Water, 16.9 Fl Oz (Pack of 24 Bottles)', 'grocery & gourmet food', 23.99, 23.99, 0, 2136)
 ;
 INSERT INTO products (product_name, department_name, price, list_price, discount_rate, stock_quantity)
-VALUES ('Instant Pot Duo Mini 3 Qt 7-in-1 Multi- Use Programmable Pressure Cooker, Slow Cooker', 'appliances', 79.99, 79.99, 0, 59)
+VALUES ('Instant Pot Duo Mini 3 Qt 7-in-1 Multi- Use Programmable Pressure Cooker', 'appliances', 79.99, 79.99, 0, 59)
 ;
 INSERT INTO products (product_name, department_name, price, list_price, discount_rate, stock_quantity)
 VALUES ('Ninja Professional 72oz Countertop Blender with 1000-Watt Base', 'appliances', 89.99, 89.99, 0, 125)
