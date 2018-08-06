@@ -46,11 +46,11 @@ var displayAllItems = function() {
         console.log(ITEMHEADER);
         console.log(ITEMSINFO);
         console.log("\n")
-        selectItem();
+        selectItemAndUpdate();
     });
 }
 
-var selectItem = function () {
+var selectItemAndUpdate = function () {
     inquirer.prompt([
         {
             name: "select",
@@ -66,17 +66,20 @@ var selectItem = function () {
         if (QUERYRESULT[response.select - 1].stock_quantity < response.quantity) {
             console.log(`Insufficient quantity!`);
         } else {
+            QUERYRESULT[response.select - 1].stock_quantity -= response.quantity;
+            // console.log("after in stock:",QUERYRESULT[response.select - 1].stock_quantity);
 
-            // console.log("before:",QUERYRESULT[response.select - 1].stock_quantity);
-            QUERYRESULT[response.select - 1].stock_quantity -= parseInt(response.quantity);
-            // console.log("after:",QUERYRESULT[response.select - 1].stock_quantity);
-
+            QUERYRESULT[response.select - 1].product_sales += 
+                (QUERYRESULT[response.select - 1].price * response.quantity);
+            // console.log(QUERYRESULT[response.select - 1].product_sales);
+            
             /** UPDATE UNITS */
             // updateUnits(); // does not work
             connection.query(
                 "UPDATE products SET ? WHERE ?", 
                 [
                     { stock_quantity: QUERYRESULT[response.select - 1].stock_quantity },
+                    // { product_sales: }
                     { id: response.select}
                 ], 
                 function(err, res) {
